@@ -19,7 +19,7 @@ This image has to be run as a sidekick of [rawmind/alpine-traefik][alpine-traefi
 
 Traefik labels, has to be created in your service or externalService, in order to get included in traefik dynamic config. 
 
-- traefik.enable = < true | stack | false > #Controls if you want to publish or not the service
+- traefik.enable = < true | false > # Controls if you want to publish or not the service
   - true: the service will be published as *service_name.traefik_domain*
   - false: the service will not be published
 - traefik.service = < service > # Overrides the service_name
