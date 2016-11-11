@@ -14,3 +14,6 @@ ENV SERVICE_NAME=traefik \
 ADD root /
 RUN cd ${SERVICE_VOLUME} && \
     tar czvf ${SERVICE_ARCHIVE} * ; rm -rf ${SERVICE_VOLUME}/* 
+
+# Copy default certs (TODO: Find a better way for certs)
+ADD ./certs/* /opt/traefik/certs/

@@ -7,6 +7,10 @@ This image is the traefik dynamic conf for rancher. It comes from [rawmind/ranch
 
 This work is based on [rawmind/racher-traefik](https://github.com/rawmind0/rancher-traefik).
 
+## Certificates
+
+Default Traefik certificate is added to the image. When ACME is enabled the certificates will be overruled.
+
 ## Usage
 
 This image has to be run as a sidekick of [rawmind/alpine-traefik][alpine-traefik], and makes available /opt/tools volume. It scans from rancher-metadata, looking for services and externalServices that has traefik labels, and generates traefik frontend and backends to expose the services.
