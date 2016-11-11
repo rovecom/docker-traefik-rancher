@@ -95,10 +95,10 @@
           {{- $domain := split $domains ","}}
           {{- range $i, $v := $domain -}}
             {{- if $i -}},{{- end -}}
-            {{- toLower $service_name -}}.{{- toLower $stack_name -}}.{{- $v -}}
+            {{- toLower $service_name -}}.{{- $v -}}
           {{- end -}}
         {{- else -}}
-          {{- toLower $service_name -}}.{{- toLower $stack_name -}}
+          {{- toLower $service_name -}}
         {{- end}}"
       {{- else -}}
       {{- if eq $traefik_enable "stack"}}
