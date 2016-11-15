@@ -118,7 +118,7 @@
               {{- range $i, $v := $domain}}
 [[acme.domains]]
   main = "{{- toLower $service_name -}}.{{$v}}"
-              {{- end -}}]
+              {{- end -}}
             {{- end -}}
           {{- end -}}
         {{- end -}}
