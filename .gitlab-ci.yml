@@ -9,8 +9,6 @@ stages:
 variables:
   DOCKER_DRIVER: overlay
   DOCKER_IMAGE: registry.gitlab.com/smart_dairy_farming/rancher-traefik
-  RANCHER_STACK: "traefik"
-  RANCHER_SERVICE: "traefik-conf"
 
 before_script:
   - if [[ $CI_BUILD_REF_NAME == "master" ]]; then DOCKER_IMAGE_LABELLED=$DOCKER_IMAGE:test; else DOCKER_IMAGE_LABELLED=$DOCKER_IMAGE:$CI_BUILD_REF_NAME; fi

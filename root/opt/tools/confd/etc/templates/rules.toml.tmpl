@@ -117,11 +117,7 @@
               {{- $domain := split $domains ","}}
               {{- range $i, $v := $domain}}
 [[acme.domains]]
-  main = "{{$v}}"
-  sans = ["
-                {{- if $i -}},{{- end -}}
-                {{- toLower $service_name -}}.{{- $v -}}"
-              {{- end}}]
+  main = "{{- toLower $service_name -}}.{{$v}}"
             {{- end -}}
           {{- end -}}
         {{- end -}}
