@@ -8,17 +8,16 @@ stages:
 
 variables:
   DOCKER_DRIVER: overlay
-  DOCKER_IMAGE: registry.gitlab.com/smart_dairy_farming/rancher-traefik
 
 before_script:
-  - if [[ $CI_BUILD_REF_NAME == "master" ]]; then DOCKER_IMAGE_LABELLED=$DOCKER_IMAGE:test; else DOCKER_IMAGE_LABELLED=$DOCKER_IMAGE:$CI_BUILD_REF_NAME; fi
+  - if [[ $CI_BUILD_REF_NAME == "master" ]]; then DOCKER_IMAGE=$CI_REGISTRY_IMAGE:test; else DOCKER_IMAGE=$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME; fi
 
 build:
   stage: build
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    - docker build -t $DOCKER_IMAGE_LABELLED .
-    - docker push $DOCKER_IMAGE_LABELLED
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
   only:
     - master
     - staging
