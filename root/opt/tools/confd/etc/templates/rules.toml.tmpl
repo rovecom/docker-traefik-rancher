@@ -92,7 +92,7 @@
     passHostHeader = true
     priority =  {{ if exists (printf "/stacks/%s/services/%s/labels/traefik.priority" $stack_name $service_name) -}}
                 {{  getv (printf "/stacks/%s/services/%s/labels/traefik.priority" $stack_name $service_name)  }}
-                {{ else -}}
+                {{- else -}}
                   5
                 {{- end}}
     [frontends.{{$service_name}}__{{$stack_name}}.routes.service]
@@ -166,7 +166,7 @@
                 {{- if not $i}}
 [[acme.domains]]
   main = "{{$v}}"
-                {{end -}}
+                {{- end -}}
               {{- end -}}
             {{- end -}}
           {{- end -}}
