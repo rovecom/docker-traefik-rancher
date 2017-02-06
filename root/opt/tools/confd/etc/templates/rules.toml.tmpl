@@ -97,34 +97,12 @@
                 {{- end}}
     [frontends.{{$service_name}}__{{$stack_name}}.routes.service]
       rule = "
-        {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.domain.regexp" $stack_name $service_name) -}}HostRegexp:
-          {{- $regexpses := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.domain.regexp" $stack_name $service_name)) " " "" -1 -}}
-          {{- $regexp := split $regexpses ","}}
-            {{- range $i, $r := $regexp -}}
-              {{- if $i -}},{{- end -}}
-              {{- if not (eq $r "") -}}{{- toLower $r -}}{{- end -}}
-            {{- end -}}
-          ;
-        {{- end -}}
-        {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.domain" $stack_name $service_name) -}}Host:
-          {{- $domains := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.domain" $stack_name $service_name)) " " "" -1 -}}
-          {{- $domain := split $domains ","}}
-          {{- range $i, $v := $domain -}}
+        {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name) -}}Host:
+          {{- $hosts := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name)) " " "" -1 -}}
+          {{- $host := split $hosts ","}}
+          {{- range $i, $v := $host -}}
             {{- if $i -}},{{- end -}}
-            {{- if eq $traefik_enable "true"}}
-              {{- toLower $service_name -}}.{{- toLower $stack_name -}}.{{- $v -}}
-            {{- else -}}
-              {{- if eq $traefik_enable "stack"}}
-                {{- toLower $stack_name -}}.{{- $v -}}
-              {{- end -}}
-            {{- end -}}
-            {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name) -}}
-              {{- $aliases := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name)) " " "" -1 -}}
-              {{- $alias := split $aliases ","}}
-              {{- range $i2, $a:= $alias -}}
-                ,{{- if not (eq $a "") -}}{{- toLower $a -}}.{{- end -}}{{- $v -}}
-              {{- end -}}
-            {{- end -}}
+            {{- $v -}}
           {{- end -}}
           ;
         {{- end -}}
@@ -180,63 +158,14 @@
       {{- if eq $traefik_acme "true" -}}
         {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.enable" $stack_name $service_name) -}}
           {{- $traefik_enable := getv (printf "/stacks/%s/services/%s/labels/traefik.enable" $stack_name $service_name) -}}
-          {{- if or (eq $traefik_enable "true") (eq $traefik_enable "stack")}}
-            {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.domain" $stack_name $service_name) -}}
-              {{- $domains := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.domain" $stack_name $service_name)) " " "" -1 -}}
-              {{- $domain := split $domains ","}}
-              {{- range $i, $v := $domain}}
+          {{- if eq $traefik_enable "true" -}}
+            {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name) -}}
+              {{- $hosts := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name)) " " "" -1 -}}
+              {{- $host := split $hosts ","}}
+              {{- range $i, $v := $host}}
                 {{- if not $i}}
 [[acme.domains]]
-                  {{- if eq $traefik_enable "true"}}
-  main = "{{toLower $service_name}}.{{toLower $stack_name}}.{{$v}}"
-                  {{- else -}}
-                    {{- if eq $traefik_enable "stack"}}
-  main = "{{toLower $stack_name}}.{{$v}}"
-                    {{- end -}}
-                  {{- end}}
-                  {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name)}}
-                    {{- $aliases := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name)) " " "" -1 -}}
-                    {{- $alias := split $aliases ","}}
-                    {{- if or (gt (len $domain) 1) (len $alias)}}
-  sans = ["
-                      {{- range $i2 , $a:= $alias -}}
-                        {{- if or ($i) ($i2) -}},{{- end -}}
-                        {{- if not (eq $a "") -}}{{- toLower $a -}}.{{- end -}}{{- $v -}}
-                      {{- end -}}
-                      {{- if (eq (len $domain) 1) -}}
-          "]
-                      {{end -}}
-                    {{- end -}}
-                  {{- else -}}
-                    {{- if gt (len $domain) 1}}
-  sans = ["
-                    {{- end -}}
-                  {{- end -}}
-                {{- else -}}
-                  {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name) -}}
-                    {{- $aliases := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.alias" $stack_name $service_name)) " " "" -1 -}}
-                    {{- $alias := split $aliases ","}}
-                    {{- if eq $traefik_enable "true" -}}
-                      ,{{- toLower $service_name -}}.{{- toLower $stack_name -}}.{{- $v -}}
-                    {{- else -}}
-                      {{- if eq $traefik_enable "stack" -}}
-                        ,{{- toLower $stack_name -}}.{{- $v -}}
-                      {{- end -}}
-                    {{- end -}}
-                    {{- range $i2 , $a:= $alias -}}
-                      ,{{- if not (eq $a "") -}}{{- toLower $a -}}.{{- end -}}{{- $v -}}
-                    {{- end}}
-                  {{- else -}}
-                    {{- if gt $i 1 -}},{{- end -}}
-                    {{- if eq $traefik_enable "true" -}}
-                      {{- toLower $service_name -}}.{{- toLower $stack_name -}}.{{- $v -}}
-                    {{- else -}}
-                      {{- if eq $traefik_enable "stack"}}
-                        {{- toLower $stack_name -}}.{{- $v -}}
-                      {{- end -}}
-                    {{- end -}}
-                  {{- end -}}
-          "]
+  main = "{{$v}}"
                 {{end -}}
               {{- end -}}
             {{- end -}}
