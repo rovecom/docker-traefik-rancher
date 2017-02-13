@@ -97,12 +97,21 @@
                 {{- end}}
     [frontends.{{$service_name}}__{{$stack_name}}.routes.service]
       rule = "
+        {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.host.regexp" $stack_name $service_name) -}}HostRegexp:
+          {{- $regexpses := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.host.regexp" $stack_name $service_name)) " " "" -1 -}}
+          {{- $regexp := split $regexpses ","}}
+            {{- range $i, $r := $regexp -}}
+              {{- if $i -}},{{- end -}}
+              {{- if not (eq $r "") -}}{{- toLower $r -}}{{- end -}}
+            {{- end -}}
+          ;
+        {{- end -}}
         {{- if exists (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name) -}}Host:
           {{- $hosts := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name)) " " "" -1 -}}
           {{- $host := split $hosts ","}}
           {{- range $i, $v := $host -}}
             {{- if $i -}},{{- end -}}
-            {{- $v -}}
+            {{- if not (eq $v "") -}}{{- toLower $v -}}{{- end -}}
           {{- end -}}
           ;
         {{- end -}}
