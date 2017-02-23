@@ -172,10 +172,8 @@
               {{- $hosts := replace (getv (printf "/stacks/%s/services/%s/labels/traefik.host" $stack_name $service_name)) " " "" -1 -}}
               {{- $host := split $hosts ","}}
               {{- range $i, $v := $host}}
-                {{- if not $i}}
 [[acme.domains]]
   main = "{{$v}}"
-                {{- end -}}
               {{- end -}}
             {{- end -}}
           {{- end -}}
